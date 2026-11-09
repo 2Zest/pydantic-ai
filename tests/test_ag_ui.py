@@ -2505,6 +2505,22 @@ def test_reasoning_message_thinking_roundtrip() -> None:
 
 
 @requires_ag_ui('0.1.11')
+def test_reasoning_message_drops_non_dict_provider_details() -> None:
+    messages = AGUIAdapter.load_messages(
+        [
+            ReasoningMessage(
+                id='reasoning-1',
+                content='Let me think about this...',
+                encrypted_value=json.dumps({'provider_details': ['not', 'a', 'dict']}),
+            ),
+            AssistantMessage(id='msg-1', content='Here is my response'),
+        ]
+    )
+
+    assert messages[0].parts == [ThinkingPart(content='Let me think about this...')]
+
+
+@requires_ag_ui('0.1.11')
 async def test_reasoning_events_with_all_metadata() -> None:
     """Test that REASONING_* events emit encryptedValue with all metadata fields."""
     run_input = create_input(UserMessage(id='msg_1', content='test'))
