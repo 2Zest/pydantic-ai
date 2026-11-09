@@ -899,6 +899,26 @@ CASES = [
         attrs={'status_code': 429, 'provider_error_code': None, 'provider_error_type': 'rate_limited'},
     ),
     Case(
+        id='mistral-invalid-argument',
+        model=_mistral,
+        handler=_json(
+            400,
+            {
+                'object': 'error',
+                'message': 'reasoning_effort none is not supported for this model',
+                'type': 'invalid_request_invalid_args',
+                'param': None,
+                'code': '3051',
+            },
+        ),
+        categories=_REJECTED,
+        attrs={
+            'status_code': 400,
+            'provider_error_code': '3051',
+            'provider_error_type': 'invalid_request_invalid_args',
+        },
+    ),
+    Case(
         id='mistral-non-json-error',
         model=_mistral,
         handler=lambda request: httpx2.Response(502, content=b'Bad Gateway', headers={'content-type': 'text/plain'}),
