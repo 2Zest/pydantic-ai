@@ -1456,6 +1456,13 @@ And then, call the 'hello_world' tool\
     )
 
 
+def test_file_part_narrows_binary_image_on_direct_construction() -> None:
+    part = FilePart(content=BinaryContent(data=b'fake', media_type='image/png'))
+
+    assert isinstance(part.content, BinaryImage)
+    assert ModelResponse(parts=[part]).images == [part.content]
+
+
 def test_image_url_validation_with_optional_identifier():
     image_url_ta = TypeAdapter(ImageUrl)
     image = image_url_ta.validate_python({'url': 'https://example.com/image.jpg'})

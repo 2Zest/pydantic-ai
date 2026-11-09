@@ -4161,6 +4161,13 @@ class FilePart:
     part_kind: Literal['file'] = 'file'
     """Part type identifier, this is available on all parts as a discriminator."""
 
+    def __post_init__(self) -> None:
+        # Provider adapters and custom models construct response parts directly, so the Pydantic
+        # `AfterValidator` on `content` is not run in that path. Keep image responses narrowed to
+        # `BinaryImage` regardless of how the part was constructed.
+        if not isinstance(self.content, BinaryImage):
+            self.content = BinaryContent.narrow_type(self.content)
+
     def has_content(self) -> bool:
         """Return `True` if the file content is non-empty."""
         return bool(self.content.data)
